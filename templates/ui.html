@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="session-token" content="__SESSION_TOKEN__">
+<meta name="referrer" content="no-referrer">
+<title>Legal EML Archiver</title>
+<style>
+:root{
+  --bg:#f5f4f0; --surface:#ffffff; --surface-2:#faf9f6; --ink:#1c2230; --ink-2:#4a5263; --muted:#7a8191;
+  --line:#e3e0d8; --line-2:#ecebe6; --accent:#1f3a5f; --accent-ink:#ffffff; --accent-soft:#e7edf5;
+  --gold:#a8873a; --danger:#a23b3b; --danger-soft:#f8e9e9; --ok:#2f6b4a; --ok-soft:#e6f2ea; --warn:#8a5a12; --warn-soft:#fbf1df;
+  --c1:#a23b3b; --c2:#8a5a12; --c3:#2f6b4a; --c4:#3b5998; --c5:#5d6472;
+  --radius:10px; --shadow:0 1px 2px rgba(20,25,40,.06),0 4px 16px rgba(20,25,40,.05);
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#13161d; --surface:#1b1f28; --surface-2:#171a22; --ink:#e7e9ee; --ink-2:#b9bfcc; --muted:#8a91a0;
+    --line:#2c3240; --line-2:#252a36; --accent:#8fb0dc; --accent-ink:#0f1520; --accent-soft:#1f2a3a;
+    --gold:#cfae62; --danger:#e08585; --danger-soft:#3a2224; --ok:#7cc29a; --ok-soft:#1c2e25; --warn:#e2b56a; --warn-soft:#33291a;
+    --c1:#e08585; --c2:#e2b56a; --c3:#7cc29a; --c4:#8fb0dc; --c5:#a3a9b6;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans)}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);}
+.top-inner{max-width:1320px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:.2px}
+.brand .mark{width:30px;height:30px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:17px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--ok-soft);color:var(--ok);font-weight:600}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.spacer{flex:1}
+main{max-width:1320px;margin:0 auto;padding:22px 24px 80px;display:grid;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card > .hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-2)}
+.card > .bd{padding:16px 18px}
+.step{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+h2{margin:0;font-family:var(--serif);font-size:17px;font-weight:600}
+.sub{color:var(--muted);font-size:12.5px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);padding:7px 13px;border-radius:8px;cursor:pointer;font-weight:550;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.lg{padding:10px 18px;font-size:15px}
+input[type=text],input[type=number],select,textarea{border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:7px 10px;outline:none;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+.drop{border:1.5px dashed var(--line);border-radius:var(--radius);padding:26px;text-align:center;background:var(--surface-2);transition:.15s;cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{font-family:var(--serif);font-size:16px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:14px 0;text-transform:uppercase;letter-spacing:.08em}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.status{font-size:13px;margin-top:10px;min-height:20px;color:var(--ink-2)}
+.status.err{color:var(--danger)} .status.ok{color:var(--ok)}
+details.roles summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;padding:14px 18px}
+details.roles summary::-webkit-details-marker{display:none}
+details.roles[open] summary{border-bottom:1px solid var(--line-2)}
+.chev{margin-left:auto;transition:.2s;color:var(--muted)} details[open] .chev{transform:rotate(90deg)}
+table.map{width:100%;border-collapse:collapse}
+table.map th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:4px 6px}
+table.map td{padding:4px 6px}
+table.map input{width:100%}
+.hint{font-size:12px;color:var(--muted)}
+/* Review list */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.counts{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--surface)}
+.chip b{font-weight:700}
+.list-head,.item-main{display:grid;grid-template-columns:118px minmax(220px,1.3fr) minmax(240px,1.25fr) minmax(220px,1fr) 34px;gap:16px}
+.list-head{padding:9px 18px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line-2)}
+.item{border-bottom:1px solid var(--line-2)}
+.item:last-child{border-bottom:0}
+.item-main{padding:14px 18px;align-items:start}
+.item:hover{background:var(--surface-2)}
+.date{font-variant-numeric:tabular-nums;font-weight:600}
+.time{color:var(--muted);font-size:12.5px}
+.role{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
+.role.unknown{background:var(--warn-soft);color:var(--warn)}
+.subj{font-weight:600;font-size:14.5px;word-break:break-word}
+.meta{font-size:12.5px;color:var(--ink-2);word-break:break-word}
+.meta span{color:var(--muted)}
+.snip{font-size:12.5px;color:var(--muted);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-size:12.5px;font-weight:600;margin-top:4px}
+.warnline{font-size:12px;color:var(--warn);margin-top:4px}
+.atts{display:grid;gap:6px}
+.att{display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:start;padding:6px 8px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface)}
+.att.off{opacity:.55}
+.att input{margin-top:3px}
+.att .nm{font-weight:550;word-break:break-all;font-size:13px}
+.att .pn{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all}
+.att .tg{display:inline-block;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:4px;margin-left:4px;vertical-align:1px;background:var(--warn-soft);color:var(--warn)}
+.none{font-size:12.5px;color:var(--muted);font-style:italic}
+.dec select{width:100%;font-weight:600}
+.dec textarea{width:100%;margin-top:8px;resize:vertical;min-height:58px;font-size:13px}
+.why{font-size:11.5px;color:var(--muted);margin-top:4px}
+.cat-1{border-left:3px solid var(--c1)} .cat-2{border-left:3px solid var(--c2)} .cat-3{border-left:3px solid var(--c3)} .cat-4{border-left:3px solid var(--c4)} .cat-5{border-left:3px solid var(--c5)}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px;border-radius:6px}
+.x:hover{color:var(--danger);background:var(--danger-soft)}
+.body{margin:0 18px 14px 152px;padding:12px 14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:8px;white-space:pre-wrap;word-break:break-word;font-size:13px;max-height:420px;overflow:auto}
+.body .hash{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:normal;border-bottom:1px solid var(--line-2);padding-bottom:8px;margin-bottom:8px}
+.empty{padding:48px 18px;text-align:center;color:var(--muted)}
+.empty strong{display:block;font-family:var(--serif);font-size:17px;color:var(--ink-2);margin-bottom:4px}
+.result{margin-top:14px;padding:14px;border-radius:8px;background:var(--ok-soft);color:var(--ok);display:none}
+.result.err{background:var(--danger-soft);color:var(--danger)}
+.result code{font-family:var(--mono);font-size:12.5px;word-break:break-all;color:var(--ink)}
+.mono{font-family:var(--mono)}
+footer{max-width:1320px;margin:0 auto;padding:0 24px 30px;color:var(--muted);font-size:12px}
+@media (max-width:1000px){
+  .list-head{display:none}
+  .item-main{grid-template-columns:1fr;gap:10px}
+  .body{margin:0 18px 14px}
+  .x{justify-self:end}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><div class="mark">§</div>Legal EML Archiver</div>
+    <span class="pill" title="This app is served from your own computer only and makes no network requests."><span class="dot"></span>Offline · 127.0.0.1</span>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="quitBtn" title="Stop the local server">Quit</button>
+  </div>
+</header>
+
+<main>
+  <!-- 1. Import -->
+  <section class="card">
+    <div class="hd"><div class="step">1</div><div><h2>Import correspondence</h2><div class="sub">Originals are read only — never modified. Each file is SHA-256 hashed on import.</div></div></div>
+    <div class="bd">
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose .eml files">
+        <strong>Drop .eml files here</strong>
+        <div class="sub">or click to choose files</div>
+        <input type="file" id="fileInput" accept=".eml,message/rfc822" multiple hidden>
+      </div>
+      <div class="or">or scan a local folder</div>
+      <div class="row">
+        <input type="text" id="scanPath" class="grow" placeholder="/Users/you/Documents/Matter-123/emails" spellcheck="false" autocomplete="off">
+        <label class="row" style="gap:6px"><input type="checkbox" id="recursive"> Include subfolders</label>
+        <button class="btn" id="scanBtn">Scan folder</button>
+      </div>
+      <div class="status" id="importStatus"></div>
+    </div>
+  </section>
+
+  <!-- 2. Roles -->
+  <section class="card">
+    <details class="roles" id="rolesPanel">
+      <summary><div class="step">2</div><div><h2>Sender roles &amp; filters</h2><div class="sub">Map addresses or whole domains (<span class="mono">@firm.com</span>) to roles. Saved to <span class="mono">config.json</span>.</div></div><span class="chev">▸</span></summary>
+      <div class="bd">
+        <table class="map">
+          <thead><tr><th style="width:55%">Email address or domain</th><th>Role</th><th style="width:40px"></th></tr></thead>
+          <tbody id="mapBody"></tbody>
+        </table>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="addMap">+ Add mapping</button>
+          <div class="spacer"></div>
+          <label class="row" style="gap:6px">Treat inline images under <input type="number" id="threshold" min="0" max="10240" step="1" style="width:76px"> KB as signature clutter</label>
+          <button class="btn primary" id="saveCfg">Save settings</button>
+        </div>
+        <div class="status" id="cfgStatus"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3. Review -->
+  <section class="card">
+    <div class="hd"><div class="step">3</div><div><h2>Review &amp; decide</h2><div class="sub">Confirm categories, choose which attachments to keep, and record your decision notes.</div></div></div>
+    <div class="toolbar">
+      <input type="text" id="filter" placeholder="Filter by subject, sender, note…" style="width:260px">
+      <select id="catFilter"><option value="">All categories</option></select>
+      <div class="counts" id="counts"></div>
+      <div class="spacer"></div>
+      <button class="btn" id="expandAll">Expand all</button>
+      <button class="btn danger" id="clearBtn">Clear session</button>
+    </div>
+    <div class="list-head"><div>Date / Role</div><div>Correspondence</div><div>Attachments</div><div>Decision</div><div></div></div>
+    <div id="list"></div>
+  </section>
+
+  <!-- 4. Export -->
+  <section class="card">
+    <div class="hd"><div class="step">4</div><div><h2>Generate offline archive</h2><div class="sub">Creates <span class="mono">Legal_Archive_[YYYY-MM-DD_HHMM]/</span> with dashboard, audit log, category folders and raw EML vault.</div></div></div>
+    <div class="bd">
+      <div class="row">
+        <input type="text" id="outDir" class="grow" placeholder="/Users/you/Documents/Matter-123/Archive" spellcheck="false" autocomplete="off">
+        <button class="btn primary lg" id="exportBtn">Generate Offline Archive</button>
+      </div>
+      <div class="hint" style="margin-top:6px">Absolute path to a local folder. It will be created if it does not exist. Prefer an encrypted volume.</div>
+      <div class="result" id="result"></div>
+    </div>
+  </section>
+</main>
+<footer>Everything stays on this computer. Decision notes live only in this browser tab until you export — closing the tab discards them.</footer>
+
+<script>
+"use strict";
+const TOKEN = document.querySelector('meta[name="session-token"]').content;
+const CAT_LABELS = {
+  "01_Action_Required":"01 · Action Required",
+  "02_Drafts_And_Reviews":"02 · Drafts & Reviews",
+  "03_Executed_And_Final":"03 · Executed & Final",
+  "04_Financials_And_Billing":"04 · Financials & Billing",
+  "05_General_Reference":"05 · General Reference"
+};
+let CATEGORIES = Object.keys(CAT_LABELS);
+let emails = [];                 // public email objects from the server
+const decisions = new Map();     // id -> {category, catTouched, note, atts:{idx:bool}}
+const expanded = new Set();
+let config = {};
+
+const $ = (s) => document.querySelector(s);
+function el(tag, attrs, ...kids){
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (k in n && k !== "list") n[k] = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of kids.flat()){
+    if (c === null || c === undefined || c === false) continue;
+    n.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  }
+  return n;
+}
+async function api(path, opts={}){
+  const headers = Object.assign({"X-Session-Token": TOKEN}, opts.headers||{});
+  let body = opts.body;
+  if (opts.json !== undefined){ headers["Content-Type"]="application/json"; body = JSON.stringify(opts.json); }
+  const res = await fetch(path, {method: opts.method || (body ? "POST":"GET"), headers, body, credentials:"same-origin", cache:"no-store"});
+  let data; try { data = await res.json(); } catch { data = {ok:false, error:`HTTP ${res.status}`}; }
+  if (!res.ok || data.ok === false) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+function setStatus(id, msg, kind){ const s=$(id); s.textContent=msg; s.className="status"+(kind?" "+kind:""); }
+
+/* ---------- decisions state ---------- */
+function ensureDecision(e){
+  let d = decisions.get(e.id);
+  if (!d){
+    d = {category:e.suggested_category, catTouched:false, note:"", atts:{}};
+    e.attachments.forEach(a => d.atts[a.index] = a.include_default);
+    decisions.set(e.id, d);
+  } else if (!d.catTouched){
+    d.category = e.suggested_category;
+  }
+  return d;
+}
+function mergeEmails(list){
+  emails = list.slice().sort((a,b)=> (a.date_iso||"9999").localeCompare(b.date_iso||"9999"));
+  emails.forEach(ensureDecision);
+  for (const id of [...decisions.keys()]) if (!emails.find(e=>e.id===id)) decisions.delete(id);
+  render();
+}
+
+/* ---------- render review list ---------- */
+function render(){
+  const list = $("#list");
+  list.replaceChildren();
+  const q = $("#filter").value.trim().toLowerCase();
+  const cf = $("#catFilter").value;
+  const counts = Object.fromEntries(CATEGORIES.map(c=>[c,0]));
+  emails.forEach(e => counts[decisions.get(e.id).category]++);
+  $("#counts").replaceChildren(
+    el("span",{class:"chip"}, el("b",{}, emails.length), " emails"),
+    ...CATEGORIES.filter(c=>counts[c]).map(c => el("span",{class:"chip"}, el("b",{}, counts[c]), " ", CAT_LABELS[c].split(" · ")[1]))
+  );
+  if (!emails.length){
+    list.append(el("div",{class:"empty"}, el("strong",{},"No correspondence loaded"), "Import .eml files above to begin your review."));
+    return;
+  }
+  let shown = 0;
+  for (const e of emails){
+    const d = decisions.get(e.id);
+    if (cf && d.category !== cf) continue;
+    if (q){
+      const hay = [e.subject,e.from,e.sender_role,e.to.join(" "),e.snippet,d.note,...e.attachments.map(a=>a.original_filename)].join(" ").toLowerCase();
+      if (!hay.includes(q)) continue;
+    }
+    shown++;
+    list.append(renderItem(e, d));
+  }
+  if (!shown) list.append(el("div",{class:"empty"}, "No emails match the current filter."));
+}
+
+function renderItem(e, d){
+  const catIdx = CATEGORIES.indexOf(d.category) + 1;
+  const item = el("div",{class:"item cat-"+catIdx, "data-id":e.id});
+  const [dDate, dTime] = e.date_display === "Undated" ? ["Undated",""] : e.date_display.split(" ");
+
+  const colDate = el("div",{},
+    el("div",{class:"date"}, dDate), el("div",{class:"time"}, dTime),
+    el("span",{class:"role"+(e.sender_role==="Unknown"?" unknown":""), title: e.sender_role==="Unknown" ? "Add this sender in step 2 to assign a role" : ""}, e.sender_role));
+
+  const isOpen = expanded.has(e.id);
+  const colMsg = el("div",{},
+    el("div",{class:"subj"}, e.subject || "(no subject)"),
+    el("div",{class:"meta"}, el("span",{},"From "), e.from || "—"),
+    el("div",{class:"meta"}, el("span",{},"To "), e.to.join(", ") || "—", e.cc.length ? [el("span",{}," · Cc "), e.cc.join(", ")] : null),
+    isOpen ? null : el("div",{class:"snip"}, e.snippet || "(no body text)"),
+    el("button",{class:"linkbtn", onclick:()=>{ isOpen?expanded.delete(e.id):expanded.add(e.id); render(); }}, isOpen ? "Hide email body ▴" : "Show email body ▾"),
+    e.defects.length ? el("div",{class:"warnline", title:e.defects.join("\n")}, "⚠ " + e.defects.length + " parsing notice(s)") : null
+  );
+
+  const colAtt = el("div",{class:"atts"});
+  if (!e.attachments.length) colAtt.append(el("div",{class:"none"},"No attachments"));
+  for (const a of e.attachments){
+    const on = !!d.atts[a.index];
+    const box = el("div",{class:"att"+(on?"":" off"), title:`SHA-256: ${a.sha256}\n${a.content_type} · ${a.size_human}` + (a.clutter_reason ? "\n"+a.clutter_reason : "")});
+    const cb = el("input",{type:"checkbox", checked:on, "aria-label":"Include "+a.original_filename, onchange:(ev)=>{ d.atts[a.index]=ev.target.checked; box.classList.toggle("off", !ev.target.checked); }});
+    box.append(cb, el("div",{},
+      el("div",{class:"nm"}, a.original_filename, el("span",{class:"sub"}," · "+a.size_human), a.is_clutter ? el("span",{class:"tg"},"SIGNATURE / INLINE") : null),
+      el("div",{class:"pn"}, "→ " + a.proposed_filename)));
+    colAtt.append(box);
+  }
+
+  const sel = el("select",{"aria-label":"Decision category", onchange:(ev)=>{ d.category = ev.target.value; d.catTouched = true; render(); }},
+    CATEGORIES.map(c => el("option",{value:c, selected:c===d.category}, CAT_LABELS[c] + (c===e.suggested_category ? "  (auto)" : ""))));
+  const note = el("textarea",{placeholder:"Decision / context note — e.g. Hold off signing until Section 4 indemnity is revised", maxLength:5000, value:d.note, oninput:(ev)=>{ d.note = ev.target.value; }});
+  const colDec = el("div",{class:"dec"}, sel,
+    el("div",{class:"why"}, e.category_matches.length ? "Auto: matched “" + e.category_matches.slice(0,5).join("”, “") + "”" : "Auto: no keyword match (default)"),
+    note);
+
+  const colX = el("div",{}, el("button",{class:"x", title:"Remove from this session", "aria-label":"Remove", onclick:()=>removeEmail(e)}, "×"));
+
+  item.append(el("div",{class:"item-main"}, colDate, colMsg, colAtt, colDec, colX));
+  if (isOpen){
+    item.append(el("div",{class:"body"},
+      el("div",{class:"hash"}, "Source: ", e.source_name, " · ", e.raw_size_human, " · Message-ID: ", e.message_id || "—", el("br"), "Raw EML SHA-256: ", e.raw_sha256,
+         e.body_source === "html" ? [el("br"), "Body extracted from HTML (no plain-text part)"] : null),
+      e.body_text || "(no body text)"));
+  }
+  return item;
+}
+
+async function removeEmail(e){
+  try { await api("/api/remove",{json:{id:e.id}}); decisions.delete(e.id); expanded.delete(e.id); emails = emails.filter(x=>x.id!==e.id); render(); }
+  catch(err){ alert(err.message); }
+}
+
+/* ---------- import ---------- */
+async function uploadFiles(files){
+  files = [...files].filter(f => /\.eml$/i.test(f.name) || f.type === "message/rfc822");
+  if (!files.length){ setStatus("#importStatus","No .eml files selected.","err"); return; }
+  let added=0, dup=0; const errs=[];
+  for (let i=0;i<files.length;i++){
+    setStatus("#importStatus", `Parsing ${i+1} of ${files.length}: ${files[i].name}…`);
+    try {
+      const r = await api("/api/upload",{body:files[i], headers:{"X-Filename":encodeURIComponent(files[i].name),"Content-Type":"message/rfc822"}});
+      if (r.added){ added++; emails.push(r.email); } else dup++;
+    } catch(err){ errs.push(files[i].name + ": " + err.message); }
+  }
+  mergeEmails(emails);
+  const msg = `Imported ${added} email(s)` + (dup? `, ${dup} duplicate(s) skipped (identical SHA-256)` : "") + (errs.length? `. ${errs.length} failed: ${errs.join("; ")}` : ".");
+  setStatus("#importStatus", msg, errs.length ? "err" : "ok");
+}
+const drop = $("#drop"), fileInput = $("#fileInput");
+drop.addEventListener("click", ()=>fileInput.click());
+drop.addEventListener("keydown", (ev)=>{ if (ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); fileInput.click(); }});
+fileInput.addEventListener("change", ()=>{ uploadFiles(fileInput.files); fileInput.value=""; });
+["dragenter","dragover"].forEach(t=>drop.addEventListener(t,(ev)=>{ev.preventDefault(); drop.classList.add("over");}));
+["dragleave","drop"].forEach(t=>drop.addEventListener(t,(ev)=>{ev.preventDefault(); drop.classList.remove("over");}));
+drop.addEventListener("drop",(ev)=>uploadFiles(ev.dataTransfer.files));
+window.addEventListener("dragover",(ev)=>ev.preventDefault());
+window.addEventListener("drop",(ev)=>ev.preventDefault());
+
+$("#scanBtn").addEventListener("click", async ()=>{
+  const path = $("#scanPath").value.trim();
+  if (!path){ setStatus("#importStatus","Enter a folder path to scan.","err"); return; }
+  setStatus("#importStatus","Scanning…");
+  try {
+    const r = await api("/api/scan",{json:{path, recursive:$("#recursive").checked}});
+    mergeEmails(r.emails);
+    setStatus("#importStatus", `Found ${r.found} .eml file(s): ${r.added} imported, ${r.duplicates} duplicate(s).` + (r.errors.length ? ` Errors: ${r.errors.join("; ")}` : ""), r.errors.length?"err":"ok");
+  } catch(err){ setStatus("#importStatus", err.message, "err"); }
+});
+
+/* ---------- config ---------- */
+function mapRow(k="", v=""){
+  const tr = el("tr",{},
+    el("td",{}, el("input",{type:"text", value:k, placeholder:"name@firm.com or @firm.com", spellcheck:false, class:"mk"})),
+    el("td",{}, el("input",{type:"text", value:v, placeholder:"Counsel", class:"mv", list:"roleSuggestions"})),
+    el("td",{}, el("button",{class:"x", title:"Remove mapping", onclick:()=>tr.remove()}, "×")));
+  return tr;
+}
+function renderConfig(){
+  const body = $("#mapBody"); body.replaceChildren();
+  Object.entries(config.role_mappings || {}).forEach(([k,v]) => body.append(mapRow(k,v)));
+  if (!body.children.length) body.append(mapRow());
+  $("#threshold").value = config.ignore_inline_images_under_kb ?? 15;
+  if (config.last_output_dir && !$("#outDir").value) $("#outDir").value = config.last_output_dir;
+  if (config.last_input_dir && !$("#scanPath").value) $("#scanPath").value = config.last_input_dir;
+}
+$("#addMap").addEventListener("click", ()=>{ const r = mapRow(); $("#mapBody").append(r); r.querySelector("input").focus(); });
+$("#saveCfg").addEventListener("click", async ()=>{
+  const role_mappings = {};
+  for (const tr of $("#mapBody").children){
+    const k = tr.querySelector(".mk").value.trim().toLowerCase(), v = tr.querySelector(".mv").value.trim();
+    if (k && v) role_mappings[k] = v;
+  }
+  try {
+    const r = await api("/api/config",{json:{role_mappings, ignore_inline_images_under_kb: Number($("#threshold").value)}});
+    config = r.config; renderConfig();
+    // Clutter defaults may have changed: re-seed untouched attachment toggles.
+    for (const e of r.emails){ const d = decisions.get(e.id); if (d) e.attachments.forEach(a => { if (!(a.index in d.atts)) d.atts[a.index] = a.include_default; }); }
+    mergeEmails(r.emails);
+    setStatus("#cfgStatus","Saved to config.json — roles and filenames refreshed.","ok");
+  } catch(err){ setStatus("#cfgStatus", err.message, "err"); }
+});
+
+/* ---------- toolbar ---------- */
+$("#filter").addEventListener("input", render);
+$("#catFilter").addEventListener("change", render);
+$("#expandAll").addEventListener("click", ()=>{
+  const all = emails.every(e=>expanded.has(e.id));
+  emails.forEach(e => all ? expanded.delete(e.id) : expanded.add(e.id));
+  $("#expandAll").textContent = all ? "Expand all" : "Collapse all";
+  render();
+});
+$("#clearBtn").addEventListener("click", async ()=>{
+  if (!emails.length) return;
+  if (!confirm("Remove all loaded emails and discard your notes for this session?")) return;
+  await api("/api/clear",{json:{}}); decisions.clear(); expanded.clear(); emails=[]; render();
+});
+
+/* ---------- export ---------- */
+$("#exportBtn").addEventListener("click", async ()=>{
+  const res = $("#result");
+  const output_dir = $("#outDir").value.trim();
+  if (!emails.length){ res.className="result err"; res.style.display="block"; res.textContent="Import at least one email first."; return; }
+  if (!output_dir){ res.className="result err"; res.style.display="block"; res.textContent="Enter an output folder path."; return; }
+  const payload = emails.map(e => { const d = decisions.get(e.id); return {id:e.id, category:d.category, note:d.note, attachments:d.atts}; });
+  const btn = $("#exportBtn"); btn.disabled = true; btn.textContent = "Generating…";
+  try {
+    const r = await api("/api/export",{json:{output_dir, emails:payload}});
+    res.className="result"; res.style.display="block";
+    res.replaceChildren(
+      el("div",{}, el("strong",{}, "✓ Archive generated and verified. "), `${r.email_count} email(s), ${r.attachment_count} attachment(s) — every file re-hashed from disk.`),
+      el("div",{style:"margin-top:6px"}, el("code",{}, r.archive_path)),
+      el("div",{class:"row", style:"margin-top:10px"}, el("button",{class:"btn primary", onclick:()=>api("/api/open",{json:{path:r.dashboard_path}}).catch(err=>alert(err.message))}, "Open Decision Dashboard")));
+    exported = true;
+  } catch(err){
+    res.className="result err"; res.style.display="block"; res.textContent = "Export failed: " + err.message;
+  } finally { btn.disabled=false; btn.textContent="Generate Offline Archive"; }
+});
+
+$("#quitBtn").addEventListener("click", async ()=>{
+  if (!confirm("Stop the local server? Unexported notes will be lost.")) return;
+  try { await api("/api/shutdown",{json:{}}); } catch {}
+  document.body.replaceChildren(el("div",{class:"empty", style:"padding:120px 20px"}, el("strong",{},"Server stopped."), "You can close this tab."));
+});
+
+let exported = false;
+window.addEventListener("beforeunload",(ev)=>{
+  const hasNotes = [...decisions.values()].some(d=>d.note.trim());
+  if (hasNotes && !exported){ ev.preventDefault(); ev.returnValue=""; }
+});
+
+/* ---------- boot ---------- */
+(async function init(){
+  const dl = el("datalist",{id:"roleSuggestions"}, ["Counsel","Client","Opposing","Court","Co-Counsel","Expert","Witness","Internal","Vendor"].map(r=>el("option",{value:r})));
+  document.body.append(dl);
+  try {
+    const c = await api("/api/config"); config = c.config; CATEGORIES = c.categories;
+    $("#catFilter").append(...CATEGORIES.map(cat=>el("option",{value:cat}, CAT_LABELS[cat]||cat)));
+    renderConfig();
+    if (!Object.keys(config.role_mappings||{}).length || Object.keys(config.role_mappings).every(k=>k.includes("example"))) $("#rolesPanel").open = true;
+    const r = await api("/api/emails"); mergeEmails(r.emails);
+  } catch(err){ setStatus("#importStatus","Could not reach the local server: "+err.message,"err"); render(); }
+})();
+</script>
+</body>
+</html>

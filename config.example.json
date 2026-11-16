@@ -1,0 +1,19 @@
+{
+  "_comment": "Copy is made to config.json on first launch. config.json is git-ignored; never commit real addresses. Keys may be full addresses or domains ('@example.com' or 'example.com').",
+  "role_mappings": {
+    "counsel@example-law.com": "Counsel",
+    "client@example.com": "Client",
+    "opposing@example-firm.com": "Opposing",
+    "@example-court.gov": "Court"
+  },
+  "category_rules": {
+    "01_Action_Required": ["urgent", "sign", "signature", "deadline", "action required", "please confirm", "approve", "response needed"],
+    "02_Drafts_And_Reviews": ["draft", "redline", "markup", "review", "comments", "v1", "v2", "proposal", "edits"],
+    "03_Executed_And_Final": ["executed", "signed", "final", "filed", "order", "agreement", "fully executed"],
+    "04_Financials_And_Billing": ["invoice", "billing", "retainer", "statement", "fee", "wire", "payment", "receipt"]
+  },
+  "default_category": "05_General_Reference",
+  "ignore_inline_images_under_kb": 15,
+  "last_output_dir": "",
+  "last_input_dir": ""
+}

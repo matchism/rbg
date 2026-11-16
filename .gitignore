@@ -1,0 +1,67 @@
+# ------------------------------------------------------------------
+# PRIVACY: this repository is public. Never commit client material.
+# ------------------------------------------------------------------
+
+# Local configuration (contains real email addresses / roles)
+config.json
+config.json.tmp
+*.local.json
+
+# Raw correspondence and anything extracted from it
+*.eml
+*.msg
+*.mbox
+*.pst
+*.ost
+*.emlx
+
+# Generated archives and working folders
+Legal_Archive_*/
+.legal_archive_staging_*/
+output/
+outputs/
+archive/
+archives/
+input/
+inputs/
+inbox/
+emails/
+evidence/
+private/
+data/
+
+# Generated reports / logs outside the archive
+00_Decision_Dashboard.html
+00_Master_Audit_Log.csv
+*.csv
+*.log
+
+# Common document types that should never land here by accident
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.zip
+*.7z
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# OS / editor noise
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~

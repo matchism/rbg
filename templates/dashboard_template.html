@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Decision Dashboard — __ARCHIVE_TITLE__</title>
+<style>
+:root{
+  --bg:#f5f4f0; --surface:#fff; --surface-2:#faf9f6; --ink:#1c2230; --ink-2:#4a5263; --muted:#7a8191; --line:#e3e0d8; --line-2:#ecebe6;
+  --accent:#1f3a5f; --accent-ink:#fff; --accent-soft:#e7edf5; --gold:#a8873a; --warn:#8a5a12; --warn-soft:#fbf1df; --note:#fdf8ea; --note-line:#e8d9a8;
+  --c1:#a23b3b; --c2:#8a5a12; --c3:#2f6b4a; --c4:#3b5998; --c5:#5d6472;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#13161d; --surface:#1b1f28; --surface-2:#171a22; --ink:#e7e9ee; --ink-2:#b9bfcc; --muted:#8a91a0; --line:#2c3240; --line-2:#252a36;
+    --accent:#8fb0dc; --accent-ink:#0f1520; --accent-soft:#1f2a3a; --gold:#cfae62; --warn:#e2b56a; --warn-soft:#33291a; --note:#2a2618; --note-line:#4d4428;
+    --c1:#e08585; --c2:#e2b56a; --c3:#7cc29a; --c4:#8fb0dc; --c5:#a3a9b6; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+a{color:var(--accent)}
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.title{padding:22px 0 14px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+h1{margin:0;font-family:var(--serif);font-size:24px;font-weight:600}
+.meta{color:var(--muted);font-size:12.5px}
+.stats{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}
+.stat b{display:block;font-family:var(--serif);font-size:20px;line-height:1.1}
+.stat span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 0 14px}
+input[type=search],select{font:inherit;color:inherit;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:8px 12px;outline:none}
+input[type=search]{flex:1;min-width:240px}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+label.tog{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink-2)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{font:inherit;border:0;background:none;color:var(--ink-2);padding:10px 14px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;font-weight:550}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--gold)}
+nav.tabs .n{font-size:11px;background:var(--line-2);border-radius:999px;padding:1px 7px;margin-left:6px;color:var(--ink-2)}
+main{padding:20px 0 60px}
+.email{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:10px;margin-bottom:14px;overflow:hidden}
+.email.c1{border-left-color:var(--c1)} .email.c2{border-left-color:var(--c2)} .email.c3{border-left-color:var(--c3)} .email.c4{border-left-color:var(--c4)} .email.c5{border-left-color:var(--c5)}
+.e-hd{padding:14px 18px 10px;display:grid;grid-template-columns:1fr auto;gap:6px 16px}
+.subj{font-family:var(--serif);font-size:17px;font-weight:600;word-break:break-word}
+.when{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:13px;white-space:nowrap}
+.who{font-size:13px;color:var(--ink-2);word-break:break-word}
+.who span{color:var(--muted)}
+.badges{display:flex;gap:6px;justify-content:flex-end;align-items:start;flex-wrap:wrap}
+.b{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.b.cat{background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.note{margin:0 18px 12px;padding:10px 14px;background:var(--note);border:1px solid var(--note-line);border-radius:8px;white-space:pre-wrap;word-break:break-word}
+.note::before{content:"Decision note";display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:700;margin-bottom:2px}
+.e-bd{padding:0 18px 14px}
+details.body summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:13px}
+details.body pre{white-space:pre-wrap;word-break:break-word;font:13px/1.55 var(--sans);background:var(--surface-2);border:1px solid var(--line-2);border-radius:8px;padding:12px;max-height:480px;overflow:auto;margin:8px 0 0}
+.snip{color:var(--muted);font-size:13px;margin:0 0 6px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--line-2);vertical-align:top;word-break:break-all}
+td.sz{white-space:nowrap;word-break:normal}
+td.h,.h{font-family:var(--mono);font-size:11px;color:var(--muted)}
+tr.ex td{opacity:.55}
+.vault{margin-top:10px;font-size:12.5px;color:var(--ink-2);display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}
+mark{background:#ffe58a;color:inherit;border-radius:2px}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+.integrity{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;font-size:13px;color:var(--ink-2)}
+.integrity h2{font-family:var(--serif);font-size:16px;margin:0 0 6px;color:var(--ink)}
+.integrity code{font-family:var(--mono);font-size:12px;background:var(--surface-2);padding:1px 5px;border-radius:4px;border:1px solid var(--line-2)}
+@media (max-width:720px){ .e-hd{grid-template-columns:1fr} .when,.badges{text-align:left;justify-content:flex-start} }
+@media print{ header{position:static} .controls,nav.tabs{display:none} details.body pre{max-height:none} .email{break-inside:avoid} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="title">
+      <div>
+        <h1>Decision Dashboard</h1>
+        <div class="meta" id="metaLine"></div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="controls">
+      <input type="search" id="q" placeholder="Search subject, sender, notes, body, filenames, SHA-256…" aria-label="Search archive" autofocus>
+      <select id="role" aria-label="Filter by sender role"><option value="">All roles</option></select>
+      <select id="sort" aria-label="Sort order"><option value="asc">Oldest first</option><option value="desc">Newest first</option></select>
+      <label class="tog"><input type="checkbox" id="notesOnly"> Notes only</label>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+  </div>
+</header>
+<div class="wrap"><main id="main"></main>
+  <section class="integrity">
+    <h2>Chain of custody &amp; verification</h2>
+    Every attachment and every original <code>.eml</code> was hashed with SHA-256 at import and re-verified from disk after writing.
+    Originals are stored byte-for-byte (read-only) in <code>99_Raw_EML_Vault/</code>. The full log is in
+    <a id="auditLink" href="./00_Master_Audit_Log.csv">00_Master_Audit_Log.csv</a>. To independently verify a file:<br><br>
+    macOS / Linux: <code>shasum -a 256 "path/to/file"</code> &nbsp;·&nbsp; Windows: <code>certutil -hashfile "path\to\file" SHA256</code> or <code>Get-FileHash "path\to\file"</code>
+  </section>
+  <p class="meta" style="padding:16px 0 40px">Generated offline. This file loads no external resources.</p>
+</div>
+
+<script id="archive-data" type="application/json">/*__ARCHIVE_DATA__*/</script>
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById("archive-data").textContent);
+const LABELS = {"01_Action_Required":"Action Required","02_Drafts_And_Reviews":"Drafts & Reviews","03_Executed_And_Final":"Executed & Final","04_Financials_And_Billing":"Financials & Billing","05_General_Reference":"General Reference"};
+const CATS = DATA.meta.categories;
+let tab = "ALL";
+const $ = s => document.querySelector(s);
+function el(tag, attrs, ...kids){
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){ if (v==null||v===false) continue; if (k==="class") n.className=v; else if (k.startsWith("on")) n.addEventListener(k.slice(2),v); else n.setAttribute(k,v); }
+  for (const c of kids.flat()){ if (c==null||c===false) continue; n.append(c instanceof Node ? c : document.createTextNode(String(c))); }
+  return n;
+}
+function relHref(p){ // "./Folder/File name.pdf" -> encoded relative URL
+  return "./" + p.replace(/^\.\//,"").split("/").map(encodeURIComponent).join("/");
+}
+function hl(text, q){ // highlight search hits using text nodes only (no innerHTML)
+  text = String(text||""); if (!q) return text;
+  const out = []; const lo = text.toLowerCase(); let i = 0, j;
+  while ((j = lo.indexOf(q, i)) !== -1 && out.length < 400){ out.push(text.slice(i,j), el("mark",{}, text.slice(j, j+q.length))); i = j + q.length; }
+  out.push(text.slice(i)); return out;
+}
+function fmtSize(n){ return n < 1024 ? n+" B" : n < 1048576 ? (n/1024).toFixed(1)+" KB" : (n/1048576).toFixed(1)+" MB"; }
+function haystack(e){
+  return [e.subject,e.from,e.to.join(" "),e.cc.join(" "),e.sender_role,e.note,e.body,e.raw_sha256,e.raw_eml_name,e.message_id,
+    ...e.attachments.flatMap(a=>[a.original_filename,a.standardized_filename||"",a.sha256])].join("\n").toLowerCase();
+}
+DATA.emails.forEach(e => e._h = haystack(e));
+
+function header(){
+  const m = DATA.meta;
+  $("#metaLine").textContent = `${m.archive_name} · generated ${m.generated_display}`;
+  const roles = [...new Set(DATA.emails.map(e=>e.sender_role))].sort();
+  $("#role").append(...roles.map(r=>el("option",{value:r}, r)));
+  const notes = DATA.emails.filter(e=>e.note).length;
+  $("#stats").replaceChildren(
+    el("div",{class:"stat"}, el("b",{}, m.email_count), el("span",{},"Emails")),
+    el("div",{class:"stat"}, el("b",{}, m.attachment_count), el("span",{},"Attachments")),
+    el("div",{class:"stat"}, el("b",{}, notes), el("span",{},"Decision notes")));
+}
+function filtered(){
+  const q = $("#q").value.trim().toLowerCase(), role = $("#role").value, notesOnly = $("#notesOnly").checked;
+  let list = DATA.emails.filter(e => (!q || e._h.includes(q)) && (!role || e.sender_role===role) && (!notesOnly || e.note));
+  if ($("#sort").value === "desc") list = list.slice().reverse();
+  return {list, q};
+}
+function renderTabs(list){
+  const counts = {ALL:list.length}; CATS.forEach(c=>counts[c]=list.filter(e=>e.category===c).length);
+  $("#tabs").replaceChildren(...["ALL",...CATS].map(c => el("button",{role:"tab","aria-selected":String(c===tab), onclick:()=>{tab=c; render();}},
+    c==="ALL" ? "All" : c.slice(0,2)+" · "+LABELS[c], el("span",{class:"n"}, counts[c]))));
+}
+function card(e, q){
+  const ci = CATS.indexOf(e.category)+1;
+  const atts = e.attachments;
+  const kept = atts.filter(a=>a.included);
+  return el("article",{class:"email c"+ci},
+    el("div",{class:"e-hd"},
+      el("div",{class:"subj"}, hl(e.subject || "(no subject)", q)),
+      el("div",{class:"when"}, e.date_display),
+      el("div",{class:"who"}, el("span",{},"From "), hl(e.from,q), el("br"), el("span",{},"To "), hl(e.to.join(", ")||"—",q), e.cc.length ? [el("span",{}," · Cc "), hl(e.cc.join(", "),q)] : null),
+      el("div",{class:"badges"}, el("span",{class:"b"}, e.sender_role), el("span",{class:"b cat"}, LABELS[e.category]||e.category))),
+    e.note ? el("div",{class:"note"}, hl(e.note,q)) : null,
+    el("div",{class:"e-bd"},
+      el("details",{class:"body", ...(q && e.body.toLowerCase().includes(q) ? {open:""} : {})},
+        el("summary",{}, "Email body"), el("pre",{}, hl(e.body || "(no body text)", q))),
+      atts.length ? el("table",{},
+        el("thead",{}, el("tr",{}, el("th",{},"Archived file"), el("th",{},"Original name"), el("th",{},"Size"), el("th",{},"SHA-256"))),
+        el("tbody",{}, atts.map(a => a.included
+          ? el("tr",{}, el("td",{}, el("a",{href:relHref(a.relative_path), target:"_blank", rel:"noopener"}, hl(a.standardized_filename,q))), el("td",{}, hl(a.original_filename,q)), el("td",{class:"sz"}, fmtSize(a.size)), el("td",{class:"h"}, hl(a.sha256,q)))
+          : el("tr",{class:"ex", title:a.excluded_reason}, el("td",{}, "— not archived ("+a.excluded_reason+")"), el("td",{}, hl(a.original_filename,q)), el("td",{class:"sz"}, fmtSize(a.size)), el("td",{class:"h"}, hl(a.sha256,q))))))
+        : el("div",{class:"snip"}, "No attachments."),
+      el("div",{class:"vault"}, "Original:", el("a",{href:relHref(e.raw_eml_path), download:""}, hl(e.raw_eml_name,q)), el("span",{class:"h"}, "SHA-256 ", hl(e.raw_sha256,q))),
+      e.defects && e.defects.length ? el("div",{class:"snip", title:e.defects.join("\n")}, "⚠ Parser notices: "+e.defects.join(", ")) : null));
+}
+function render(){
+  const {list, q} = filtered();
+  renderTabs(list);
+  const shown = tab==="ALL" ? list : list.filter(e=>e.category===tab);
+  $("#main").replaceChildren(...(shown.length ? shown.map(e=>card(e,q)) : [el("div",{class:"empty"}, "No correspondence matches.")]));
+}
+["input","change"].forEach(t => { $("#q").addEventListener(t, render); });
+$("#role").addEventListener("change", render); $("#sort").addEventListener("change", render); $("#notesOnly").addEventListener("change", render);
+document.addEventListener("keydown", ev => { if (ev.key==="/" && document.activeElement !== $("#q")){ ev.preventDefault(); $("#q").focus(); } });
+header(); render();
+</script>
+</body>
+</html>
